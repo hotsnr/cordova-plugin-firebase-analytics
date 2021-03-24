@@ -13,6 +13,13 @@
     }
 }
 
+- (void)getAppInstanceId:(CDVInvokedUrlCommand*)command {
+    NSString *instanceID = [FIRAnalytics appInstanceID];
+
+    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:instanceID];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+}
+
 - (void)logEvent:(CDVInvokedUrlCommand *)command {
     NSString* name = [command.arguments objectAtIndex:0];
     NSDictionary* parameters = [command.arguments objectAtIndex:1];

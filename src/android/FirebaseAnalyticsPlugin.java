@@ -31,6 +31,29 @@ public class FirebaseAnalyticsPlugin extends ReflectiveCordovaPlugin {
     }
 
     @CordovaMethod
+    private void getAppInstanceId(CallbackContext callbackContext) {
+        Task<String> task = this.firebaseAnalytics.getAppInstanceId();
+        task.addOnCompleteListener(new OnCompleteListener<string>() {
+            @Override
+            public void onComplete(@NonNull Task<string> task) {
+                if (task.isSuccessful()) {
+                    // Task completed successfully
+                    callbackContext.success(task.getResult());
+                } else {
+                    // Task failed with an exception
+                    Exception exception = task.getException();
+                    exception.printStackTrace();
+
+                    JSONObject errorObj = new JSONObject();
+                    addProperty(errorObj, "name", "FIREBASE_ANALYTICS_APPINSTANCEID_FAILED");
+                    addProperty(errorObj, "message", exception.getMessage() ?? "Failed to get app instance id");
+                    callbackContext.error(errorObj);
+                }
+            }
+        });
+    }
+
+    @CordovaMethod
     private void logEvent(String name, JSONObject params, CallbackContext callbackContext) throws JSONException {
         this.firebaseAnalytics.logEvent(name, parse(params));
 
