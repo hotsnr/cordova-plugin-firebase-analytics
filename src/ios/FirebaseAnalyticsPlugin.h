@@ -2,6 +2,7 @@
 
 @interface FirebaseAnalyticsPlugin : CDVPlugin
 
+- (void)getAppInstanceId:(CDVInvokedUrlCommand*)command;
 - (void)logEvent:(CDVInvokedUrlCommand*)command;
 - (void)setUserId:(CDVInvokedUrlCommand*)command;
 - (void)setUserProperty:(CDVInvokedUrlCommand*)command;

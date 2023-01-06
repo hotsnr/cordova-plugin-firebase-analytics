@@ -7,6 +7,8 @@ import android.util.Log;
 import by.chemerisuk.cordova.support.CordovaMethod;
 import by.chemerisuk.cordova.support.ReflectiveCordovaPlugin;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 import org.apache.cordova.CallbackContext;
@@ -28,6 +30,33 @@ public class FirebaseAnalyticsPlugin extends ReflectiveCordovaPlugin {
         Context context = this.cordova.getActivity().getApplicationContext();
 
         this.firebaseAnalytics = FirebaseAnalytics.getInstance(context);
+    }
+
+    @CordovaMethod
+    private void getAppInstanceId(CallbackContext callbackContext) {
+        Task<String> task = this.firebaseAnalytics.getAppInstanceId();
+        task.addOnCompleteListener(new OnCompleteListener<String>() {
+            @Override
+            public void onComplete(Task<String> task) {
+                if (task.isSuccessful()) {
+                    // Task completed successfully
+                    callbackContext.success(task.getResult());
+                } else {
+                    // Task failed with an exception
+                    Exception exception = task.getException();
+                    exception.printStackTrace();
+
+                    try {
+                        JSONObject errorObj = new JSONObject();
+                        errorObj.put("name", "FIREBASE_ANALYTICS_APPINSTANCEID_FAILED");
+                        errorObj.put("message", exception.getMessage() != null ? exception.getMessage() : "Failed to get app instance id");
+                        callbackContext.error(errorObj);
+                    } catch (JSONException e) {
+                        callbackContext.error(e.getMessage());
+                    }
+                }
+            }
+        });
     }
 
     @CordovaMethod
